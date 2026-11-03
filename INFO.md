@@ -45,4 +45,5 @@ Go step by step and explain each step so I understand the code. Steps:
 1. Data format (done) 2. Folder setup (done) 3. Mock data generator (done)
 4. api.js data layer (done) 5. Latest readings (done) 6. Warnings/critical alerts (done)
 7. Graphs (done) 8. Range dropdown: last 24 h / 7 days / single day (done)
-9. Auto-refresh
+9. Auto-refresh every minute, paused while tab hidden (done)
+10. Backend on Render + Supabase (done); website uses it (USE_MOCK = false)

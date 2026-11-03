@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { CONFIG } from './config.js'
 import { USE_MOCK, getLatestReading, getReadings, getWaterings } from './data/api.js'
 import { formatLocalTime, formatTimeAgo } from './data/convert.js'
 import { evaluateAlerts } from './data/alerts.js'
@@ -13,17 +14,39 @@ function App() {
   const [range, setRange] = useState(LAST_24_HOURS.value) // what the dropdown shows
   const [data, setData] = useState(null) // { latest, readings, waterings, from, to, range }
   const [error, setError] = useState(null)
+  const [refreshes, setRefreshes] = useState(0) // goes up by 1 on each auto-refresh
+
+  // Auto-refresh: every minute, bump `refreshes`, which makes the effect
+  // below load the data again. Skipped while the tab is hidden (no point
+  // loading data nobody sees); when the tab is shown again it refreshes
+  // straight away instead of waiting for the next minute.
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === 'visible') setRefreshes((n) => n + 1)
+    }
+    const timer = setInterval(refresh, CONFIG.REFRESH_INTERVAL_SEC * 1000)
+    document.addEventListener('visibilitychange', refresh)
+
+    // Cleanup: stop the timer if this component is ever removed.
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [])
 
   // Loads everything the page needs at once. `ignore` stops a slow, outdated
   // request from overwriting newer data (and handles React running effects
-  // twice in development). Runs again whenever the dropdown changes.
+  // twice in development). Runs again whenever the dropdown changes or an
+  // auto-refresh happens.
   useEffect(() => {
     let ignore = false
     const { from, to } = getRange(range)
 
     Promise.all([getLatestReading(), getReadings(from, to), getWaterings(from, to)])
       .then(([latest, readings, waterings]) => {
-        if (!ignore) setData({ latest, readings, waterings, from, to, range })
+        if (ignore) return
+        setData({ latest, readings, waterings, from, to, range })
+        setError(null) // clears an old error once a refresh works again
       })
       .catch((err) => {
         if (!ignore) setError(err.message)
@@ -31,7 +54,7 @@ function App() {
     return () => {
       ignore = true
     }
-  }, [range])
+  }, [range, refreshes])
 
   // Status line under the title. The free Render server sleeps when nobody
   // uses it and takes up to a minute to wake, so say so while loading.

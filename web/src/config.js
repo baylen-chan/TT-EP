@@ -12,6 +12,10 @@ export const CONFIG = {
   // than this, the device is probably offline or out of battery.
   READING_INTERVAL_MIN: 10,
 
+  // How often the page checks the server for new readings, in seconds.
+  // It skips checks while the browser tab is hidden.
+  REFRESH_INTERVAL_SEC: 60,
+
   // How many single days the chart dropdown lists (today and the days before it).
   PAST_DAYS_IN_DROPDOWN: 30,
 
