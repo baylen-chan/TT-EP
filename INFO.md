@@ -19,6 +19,11 @@ come later; focus on data only.
   doesn't match the format below.
 - To switch to real data: set API_BASE_URL and USE_MOCK = false in web/src/data/api.js.
 
+## Live addresses
+- Website: https://tt-ep-web.onrender.com (Render static site, root `web`)
+- Server: https://tt-ep.onrender.com (Render web service, root `server`)
+- Code: github.com/baylen-chan/TT-EP (private). Every push to main redeploys both.
+
 ## Backend (`server/`)
 - Node/Express, hosted on Render (free web service). Database: Postgres on
   Supabase (free). Not SQLite or Render's free Postgres: Render's free disk is
