@@ -4,12 +4,13 @@
 //   getReadings(from, to)     -> readings between two Dates, oldest first
 //   getWaterings(from, to)    -> watering events between two Dates, oldest first
 //
-// When the backend is ready: set API_BASE_URL, flip USE_MOCK to false.
+// The server code is in server/ at the top of the project.
 import { CONFIG } from '../config.js'
 import { generateMockData } from './mock.js'
 
-export const USE_MOCK = true
-const API_BASE_URL = 'http://localhost:3001' // the Node server, once it exists
+// Set USE_MOCK to true to go back to fake data (e.g. to preview alerts).
+export const USE_MOCK = false
+const API_BASE_URL = 'https://tt-ep.onrender.com' // the Node server on Render
 
 // Preview different situations with mock data by changing these numbers:
 //   days: 18 = healthy (CO₂ can dip on sunny afternoons), 24 = water warning,

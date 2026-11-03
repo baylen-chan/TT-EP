@@ -33,8 +33,9 @@ function App() {
     }
   }, [range])
 
-  // Status line under the title.
-  let status = 'Loading…'
+  // Status line under the title. The free Render server sleeps when nobody
+  // uses it and takes up to a minute to wake, so say so while loading.
+  let status = USE_MOCK ? 'Loading…' : 'Loading… (the server can take up to a minute to wake up)'
   if (error) status = `Couldn't load data: ${error}`
   else if (data && !data.latest) status = 'No readings yet. Waiting for the TerraPod to upload.'
   else if (data) status = `Last reading: ${formatLocalTime(data.latest.timestamp)} (${formatTimeAgo(data.latest.timestamp)})`
