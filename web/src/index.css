@@ -1,0 +1,162 @@
+/* Colours live here as variables, so dark mode only has to change this list. */
+:root {
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --bg: #f5f5f7; /* page background, behind the cards */
+  --card: #ffffff;
+  --bar: rgba(245, 245, 247, 0.72); /* see-through top bar */
+  --header-bg: #fafafc; /* table headers */
+  --border: #d2d2d7;
+  --grid: #e8e8ed; /* chart grid lines */
+  --line: #0071e3; /* chart data line */
+  --ok: #1a7f37;
+  --warning: #b25000;
+  --critical: #d70015;
+
+  color-scheme: light dark; /* the dropdown and scrollbars follow light/dark too */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #f5f5f7;
+    --muted: #a1a1a6;
+    --bg: #000000;
+    --card: #1c1c1e;
+    --bar: rgba(22, 22, 23, 0.72);
+    --header-bg: #242426;
+    --border: #38383a;
+    --grid: #38383a;
+    --line: #409cff;
+    --ok: #30d158;
+    --warning: #ffb340;
+    --critical: #ff6961;
+  }
+}
+
+/* Sizes are in rem (1rem = the browser's text size, usually 16px), so the
+   page scales if someone has made their text bigger. */
+body {
+  margin: 0;
+  font: 100%/1.5 system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Centres the content in a column. Used by the top bar and the main area. */
+.page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+main.page { padding-bottom: 3rem; }
+
+/* ---------- Glass top bar ----------
+   position: sticky keeps it at the top while you scroll. The background is
+   see-through, and backdrop-filter blurs whatever scrolls underneath it. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* stays above the charts */
+  padding: 0.75rem 0;
+  background: var(--bar);
+  -webkit-backdrop-filter: saturate(180%) blur(20px); /* older Safari */
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.topbar h1 { margin: 0; }
+.topbar p { margin: 0; font-size: 0.9rem; }
+
+/* People who turn on "Reduce transparency" get a solid bar instead. */
+@media (prefers-reduced-transparency: reduce) {
+  .topbar {
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Big text looks better slightly tighter: less line height, letters closer. */
+h1 {
+  font-size: 1.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.muted { color: var(--muted); font-weight: normal; }
+
+/* Colours for OK / warning / critical text */
+.ok { color: var(--ok); }
+.warning { color: var(--warning); }
+.critical { color: var(--critical); font-weight: bold; }
+
+/* ---------- Rounded cards ---------- */
+.card {
+  padding: 1rem;
+  background: var(--card);
+  border-radius: 12px;
+}
+
+.alert {
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid;
+  border-radius: 12px;
+}
+
+/* The advice line under each alert stays plain text */
+.alert div { color: var(--text); font-weight: normal; }
+
+/* Tables are cards too. border-collapse: separate is needed for rounded
+   corners, and overflow: hidden clips the header colour to those corners. */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: var(--card);
+  border-radius: 12px;
+}
+
+th, td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--grid);
+  text-align: left;
+}
+
+tr:last-child td { border-bottom: none; }
+
+th { background: var(--header-bg); }
+
+/* Every digit the same width, so numbers line up in columns and on axes. */
+td, .recharts-text { font-variant-numeric: tabular-nums; }
+
+select {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  color: var(--text);
+  background: var(--card);
+}
+
+.chart { margin-bottom: 1rem; }
+
+/* Fades the charts and waterings while a new time range loads, so you can
+   see your dropdown choice was noticed. */
+.loading { opacity: 0.4; }
+.history { transition: opacity 0.15s; }

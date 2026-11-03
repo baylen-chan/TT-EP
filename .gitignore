@@ -1,0 +1,6 @@
+# Never commit secrets or installed packages, in any folder.
+.env
+.env.*
+!.env.example
+node_modules
+.DS_Store
