@@ -12,7 +12,7 @@ export default function WateringTable({ waterings }) {
   return (
     <>
       <p>
-        The pump ran {waterings.length} times in this range.
+        The pump ran {waterings.length === 1 ? 'once' : `${waterings.length} times`} in this range.
         {waterings.length > 10 && ' Showing the last 10.'}
       </p>
       <table>
