@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3001 // Render sets PORT for you
 const API_KEY = process.env.API_KEY
 
 const app = express()
+app.disable('x-powered-by') // don't advertise which software the server runs
 app.use(cors()) // lets the website, on a different address, call this server
 app.use(express.json()) // turns JSON request bodies into req.body
 
