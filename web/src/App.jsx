@@ -21,6 +21,8 @@ function App() {
   // loading data nobody sees); when the tab is shown again it refreshes
   // straight away instead of waiting for the next minute.
   useEffect(() => {
+    if (!CONFIG.REFRESH_INTERVAL_SEC) return // turned off in config.js
+
     const refresh = () => {
       if (document.visibilityState === 'visible') setRefreshes((n) => n + 1)
     }

@@ -13,8 +13,10 @@ export const CONFIG = {
   READING_INTERVAL_MIN: 10,
 
   // How often the page checks the server for new readings, in seconds.
-  // It skips checks while the browser tab is hidden.
-  REFRESH_INTERVAL_SEC: 60,
+  // It skips checks while the browser tab is hidden. 0 = off: the page
+  // loads once when opened (or when the dropdown changes) and that's it.
+  // Paused for now to save Render's free data allowance; 60 to turn back on.
+  REFRESH_INTERVAL_SEC: 0,
 
   // How many single days the chart dropdown lists (today and the days before it).
   PAST_DAYS_IN_DROPDOWN: 30,
