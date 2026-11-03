@@ -8,8 +8,10 @@ export const CONFIG = {
 
   TANK_CAPACITY_ML: 7000,
 
-  // The ESP32 uploads about every 10 min. If nothing has arrived for longer
-  // than this, the device is probably offline or out of battery.
+  // The ESP32 uploads about every 10 min. The charts use this to spot missing
+  // readings: a gap of more than 2.5 intervals breaks the line instead of
+  // joining across it. (The "device offline" alert uses
+  // minutes_since_reading in THRESHOLDS below.)
   READING_INTERVAL_MIN: 10,
 
   // How often the page checks the server for new readings, in seconds.

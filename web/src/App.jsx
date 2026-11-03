@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CONFIG } from './config.js'
-import { USE_MOCK, getLatestReading, getReadings, getWaterings } from './data/api.js'
+import { getLatestReading, getReadings, getWaterings } from './data/api.js'
 import { formatLocalTime, formatTimeAgo } from './data/convert.js'
 import { evaluateAlerts } from './data/alerts.js'
 import { LAST_24_HOURS, getRange } from './data/ranges.js'
@@ -60,7 +60,7 @@ function App() {
 
   // Status line under the title. The free Render server sleeps when nobody
   // uses it and takes up to a minute to wake, so say so while loading.
-  let status = USE_MOCK ? 'Loading…' : 'Loading… (the server can take up to a minute to wake up)'
+  let status = 'Loading… (the server can take up to a minute to wake up)'
   if (error) status = `Couldn't load data: ${error}`
   else if (data && !data.latest) status = 'No readings yet. Waiting for the TerraPod to upload.'
   else if (data) status = `Last reading: ${formatLocalTime(data.latest.timestamp)} (${formatTimeAgo(data.latest.timestamp)})`
@@ -78,10 +78,7 @@ function App() {
       <header className="topbar">
         <div className="page">
           <h1>TerraPod Live Data</h1>
-          <p className={error ? 'critical' : 'muted'}>
-            {status}
-            {USE_MOCK && ' · Mock data'}
-          </p>
+          <p className={error ? 'critical' : 'muted'}>{status}</p>
         </div>
       </header>
 
