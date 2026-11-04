@@ -9,5 +9,4 @@ export const METRICS = [
   { key: 'temp_c', label: 'Temperature', unit: '°C', digits: 1, value: (r) => r.temp_c },
   { key: 'humidity_pct', label: 'Humidity', unit: '%', digits: 0, value: (r) => r.humidity_pct },
   { key: 'co2_ppm', label: 'CO₂', unit: 'ppm', digits: 0, value: (r) => r.co2_ppm },
-  { key: 'lux', label: 'Light', unit: 'lux', digits: 0, value: (r) => r.lux },
 ]

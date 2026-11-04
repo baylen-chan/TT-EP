@@ -54,11 +54,12 @@ Status: everything is live and tested; waiting for the ESP32 to send real data.
 
 ## Data format (agreed with firmware team)
 Reading: {"timestamp": "2026-11-10T14:30:00Z", "soil_moisture": 612,
-"lux": 8450, "co2_ppm": 520, "temp_c": 24.3, "humidity_pct": 61, "water_ml": 5200}
+"lux": null, "co2_ppm": 520, "temp_c": 24.3, "humidity_pct": 61, "water_ml": null}
 Watering event: {"timestamp": "...", "duration_s": 5, "water_ml": 150}
 - Timestamps UTC ISO; display in local time.
 - soil_moisture is raw; website converts to % with calibration constants.
-- Tank holds ~7000 mL; show low-water warning below a set level.
+- Tank capacity is not measured yet. After measuring it, update the firmware
+  calibration and `web/src/config.js`; low-water alerts stay disabled until then.
 
 ## How to work with me
 Go step by step and explain each step so I understand the code.
