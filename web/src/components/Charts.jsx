@@ -20,11 +20,11 @@ const FIXED_Y_AXES = {
 
 // One simple line chart per sensor, stacked down the page.
 export default function Charts({ readings, from, to }) {
-  if (readings.length === 0) {
-    return <p>No readings in this time range.</p>
-  }
-
-  const rows = buildChartRows(readings)
+  // With no readings, still draw every chart (axes, grid and limit lines)
+  // so the page shows what's coming. Two empty rows at the start and end of
+  // the range give the time axis something to draw.
+  const empty = readings.length === 0
+  const rows = empty ? [{ time: from.getTime() }, { time: to.getTime() }] : buildChartRows(readings)
   const ticks = makeTimeTicks(from, to)
   const showHours = to - from <= 2 * 24 * 60 * 60 * 1000
 
@@ -34,9 +34,14 @@ export default function Charts({ readings, from, to }) {
 
   return (
     <div>
+      {empty && <p className="muted">No readings in this time range yet.</p>}
       {METRICS.map((metric) => {
         const limits = CONFIG.THRESHOLDS[metric.key] ?? {}
-        const yAxis = FIXED_Y_AXES[metric.key] ?? makeYAxis(rows.map((row) => row[metric.key]))
+        // Fit the axis to the data. If this sensor has no data in the range,
+        // fit it to the alert limits instead so the empty chart still has a
+        // sensible scale (e.g. 0-40 °C rather than 0-4).
+        const values = rows.map((row) => row[metric.key])
+        const yAxis = FIXED_Y_AXES[metric.key] ?? makeYAxis(values.some(isNumber) ? values : Object.values(limits))
 
         // Tooltip text for one point, e.g. "24.3 °C".
         const formatValue = (value) => [

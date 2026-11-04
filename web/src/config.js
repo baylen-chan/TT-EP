@@ -25,7 +25,10 @@ export const CONFIG = {
     soil_pct:     { critLow: 15,   warnLow: 30,   warnHigh: 90,   critHigh: null },
     temp_c:       { critLow: 10,   warnLow: 15,   warnHigh: 30,   critHigh: 35 },
     humidity_pct: { critLow: null, warnLow: 40,   warnHigh: 85,   critHigh: 95 },
-    co2_ppm:      { critLow: 200,  warnLow: 300,  warnHigh: 2000, critHigh: 5000 },
+    // The SCD-40 is rated for 400-2000 ppm: readings below 400 are rough, and
+    // one at the top may really be higher. critHigh sits just under 2000 so
+    // a reading stuck at the top still counts as critical.
+    co2_ppm:      { critLow: 200,  warnLow: 300,  warnHigh: 1500, critHigh: 1900 },
     water_ml:     { critLow: null, warnLow: null, warnHigh: null, critHigh: null },
     minutes_since_reading: { critLow: null, warnLow: null, warnHigh: 25, critHigh: 60 },
   },

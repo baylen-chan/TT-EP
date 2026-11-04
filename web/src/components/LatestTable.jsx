@@ -2,6 +2,7 @@ import { METRICS } from '../data/metrics.js'
 import { formatNumber, isNumber } from '../data/convert.js'
 
 // One table row per sensor: name, latest value, and OK / Warning / Critical.
+// `reading` is null before the first upload; every row then says "No data".
 export default function LatestTable({ reading, alerts }) {
   return (
     <table>
@@ -14,7 +15,7 @@ export default function LatestTable({ reading, alerts }) {
       </thead>
       <tbody>
         {METRICS.map((metric) => {
-          const value = metric.value(reading)
+          const value = reading ? metric.value(reading) : null
           const alert = alerts.find((a) => a.key === metric.key)
 
           let status = 'OK'
@@ -25,7 +26,7 @@ export default function LatestTable({ reading, alerts }) {
             <tr key={metric.key}>
               <td>{metric.label}</td>
               <td>{isNumber(value) ? `${formatNumber(value, metric.digits)} ${metric.unit}` : '—'}</td>
-              <td className={alert ? alert.level : 'ok'}>{status}</td>
+              <td className={alert ? alert.level : isNumber(value) ? 'ok' : 'muted'}>{status}</td>
             </tr>
           )
         })}
