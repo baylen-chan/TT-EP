@@ -10,7 +10,12 @@ import { formatLocalTime, formatNumber, isNumber } from '../data/convert.js'
 const FIXED_Y_AXES = {
   soil_pct: { domain: [0, 100], ticks: [0, 25, 50, 75, 100] },
   humidity_pct: { domain: [0, 100], ticks: [0, 25, 50, 75, 100] },
-  water_ml: { domain: [0, CONFIG.TANK_CAPACITY_ML], ticks: [0, 2000, 4000, 6000] },
+  ...(CONFIG.TANK_CAPACITY_ML == null ? {} : {
+    water_ml: {
+      domain: [0, CONFIG.TANK_CAPACITY_ML],
+      ticks: [0, 0.25, 0.5, 0.75, 1].map((fraction) => fraction * CONFIG.TANK_CAPACITY_ML),
+    },
+  }),
 }
 
 // One simple line chart per sensor, stacked down the page.

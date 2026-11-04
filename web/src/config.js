@@ -6,7 +6,9 @@ export const CONFIG = {
   SOIL_RAW_DRY: 350,
   SOIL_RAW_WET: 1000,
 
-  TANK_CAPACITY_ML: 7000,
+  // Unknown until the physical tank is measured. Charts use an automatic
+  // water axis and low-water alerts stay off while this is null.
+  TANK_CAPACITY_ML: null,
 
   // The ESP32 uploads about every 10 min. The charts use this to spot missing
   // readings: a gap of more than 2.5 intervals breaks the line instead of
@@ -24,7 +26,7 @@ export const CONFIG = {
     temp_c:       { critLow: 10,   warnLow: 15,   warnHigh: 30,   critHigh: 35 },
     humidity_pct: { critLow: null, warnLow: 40,   warnHigh: 85,   critHigh: 95 },
     co2_ppm:      { critLow: 200,  warnLow: 300,  warnHigh: 2000, critHigh: 5000 },
-    water_ml:     { critLow: 700,  warnLow: 1500, warnHigh: null, critHigh: null },
+    water_ml:     { critLow: null, warnLow: null, warnHigh: null, critHigh: null },
     minutes_since_reading: { critLow: null, warnLow: null, warnHigh: 25, critHigh: 60 },
   },
 }
