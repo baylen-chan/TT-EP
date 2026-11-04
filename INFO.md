@@ -12,26 +12,31 @@ come later; focus on data only.
 
 ## How it fits together
 ESP32 --POST--> Node server on Render --> Postgres on Supabase
-Website --GET--> same server (reads from Supabase)
+Website --GET--> same server (reads from Supabase) when the page opens
+Server --WebSocket--> website: each new reading is pushed to open pages
 Status: everything is live and tested; waiting for the ESP32 to send real data.
 
 ## Website (`web/`)
 - React (JavaScript) + Vite. Recharts for graphs. Run locally: `cd web && npm run dev`.
 - config.js: soil calibration, tank size, alert thresholds, refresh interval.
 - data/api.js: the only file that talks to the server (API_BASE_URL).
-- data/: plain JS helpers (alerts, unit conversion, chart rows, date ranges).
+- data/: plain JS helpers (alerts, unit conversion, chart rows, date ranges,
+  live.js merges pushed readings into what's on screen).
 - App.jsx: page layout and data loading. components/: one file per section.
-- Auto-refresh is OFF (REFRESH_INTERVAL_SEC = 0) to save Render's free 5 GB/month
-  of data. Set to 60 to turn on. Before leaving it on for long (e.g. a demo
-  screen), add the savers: only reload charts when a new reading arrives, and
-  gzip the server's responses.
+- Live updates: no polling. The page loads everything once over HTTP, then
+  keeps a WebSocket to /live open; the server pushes each new reading or
+  watering (~200 bytes), so Render's free 5 GB/month isn't a worry. If the
+  connection drops it retries every 5 s and reloads everything once it's back.
+  A 1-minute clock tick keeps "5 min ago" and the offline alert current.
 
 ## Backend (`server/`)
 - Node/Express, hosted on Render (free web service). Database: Postgres on
   Supabase (free). Not SQLite or Render's free Postgres: Render's free disk is
   wiped on restart, and its free Postgres is deleted after 30 days.
 - Files: index.js (routes), db.js (all SQL, creates tables on start),
-  validate.js (checks ESP32 data). Settings in .env (copy .env.example).
+  validate.js (checks ESP32 data), live.js (WebSocket at /live: broadcast()
+  after each POST, pings every 30 s to drop dead connections).
+  Settings in .env (copy .env.example).
   Run locally: `cd server && npm run dev`.
 - The school Wi-Fi blocks the database connection; use a hotspot to run the
   server locally. The deployed server is unaffected.
@@ -58,5 +63,5 @@ Watering event: {"timestamp": "...", "duration_s": 5, "water_ml": 150}
 ## How to work with me
 Go step by step and explain each step so I understand the code.
 Done: data format, latest readings, alerts, graphs, range dropdown,
-auto-refresh (currently off), backend on Render + Supabase, website online.
+backend on Render + Supabase, website online, live updates over WebSocket.
 Next: ESP32 sends real data; calibrate soil sensor; overview/team pages.

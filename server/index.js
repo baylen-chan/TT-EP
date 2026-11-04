@@ -1,11 +1,13 @@
 // The TerraPod server.
 //   The ESP32 sends data here:    POST /api/readings, POST /api/waterings
 //   The website reads it from:    GET /api/readings/latest, GET /api/readings, GET /api/waterings
+//   ...and gets new data pushed:  WebSocket at /live (see live.js)
 //
 // Run locally: npm run dev   (reads settings from .env)
 import express from 'express'
 import cors from 'cors'
 import * as db from './db.js'
+import { startLive, broadcast } from './live.js'
 import { parseRange, validateReading, validateWatering } from './validate.js'
 
 const PORT = process.env.PORT || 3001 // Render sets PORT for you
@@ -30,18 +32,21 @@ function requireApiKey(req, res, next) {
   next()
 }
 
+// After saving, each POST also pushes the new row to every open website.
 app.post('/api/readings', requireApiKey, async (req, res) => {
   const { data, error } = validateReading(req.body)
   if (error) return res.status(400).json({ error })
-  const id = await db.insertReading(data)
+  const { id, ...reading } = await db.insertReading(data)
   res.status(201).json({ id })
+  broadcast('reading', reading)
 })
 
 app.post('/api/waterings', requireApiKey, async (req, res) => {
   const { data, error } = validateWatering(req.body)
   if (error) return res.status(400).json({ error })
-  const id = await db.insertWatering(data)
+  const { id, ...watering } = await db.insertWatering(data)
   res.status(201).json({ id })
+  broadcast('watering', watering)
 })
 
 // ---------- For the website ----------
@@ -71,6 +76,7 @@ app.use((err, req, res, next) => {
 })
 
 await db.createTables()
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`TerraPod server listening on http://localhost:${PORT}`)
 })
+startLive(server)

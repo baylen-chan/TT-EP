@@ -1,8 +1,9 @@
 // The ONLY file that talks to the server. The rest of the site calls these
-// three functions:
+// four functions:
 //   getLatestReading()        -> newest reading, or null if there are none
 //   getReadings(from, to)     -> readings between two Dates, oldest first
 //   getWaterings(from, to)    -> watering events between two Dates, oldest first
+//   connectLive({ ... })      -> new readings pushed the moment they arrive
 //
 // The server code is in server/ at the top of the project.
 
@@ -31,6 +32,53 @@ async function getJson(path) {
 // Dates are sent as UTC ISO strings, e.g. ?from=2026-11-01T00:00:00.000Z
 const rangeQuery = (from, to) =>
   `?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`
+
+// Opens a WebSocket to the server and keeps it open. The server pushes each
+// new reading or watering the moment the ESP32 uploads it.
+//
+// If the connection drops (server restarted or redeployed, Wi-Fi blipped) it
+// tries again every 5 s. Once it's back it calls onReconnect, so the page can
+// reload and pick up anything sent while it was disconnected.
+//
+// Returns a function that closes the connection for good.
+const RETRY_MS = 5000
+
+export function connectLive({ onReading, onWatering, onReconnect }) {
+  let socket
+  let retryTimer
+  let dropped = false // true after a disconnect, until it's connected again
+  let stopped = false // true once the page has closed it on purpose
+
+  function connect() {
+    // https://... becomes wss://... (the encrypted WebSocket address)
+    socket = new WebSocket(API_BASE_URL.replace(/^http/, 'ws') + '/live')
+
+    socket.onopen = () => {
+      if (dropped) onReconnect()
+      dropped = false
+    }
+
+    socket.onmessage = (event) => {
+      const { type, data } = JSON.parse(event.data)
+      if (type === 'reading') onReading(checkReadings([data])[0])
+      if (type === 'watering') onWatering(data)
+    }
+
+    // Also fires when a connection attempt fails, so this is the retry loop.
+    socket.onclose = () => {
+      if (stopped) return
+      dropped = true
+      retryTimer = setTimeout(connect, RETRY_MS)
+    }
+  }
+
+  connect()
+  return () => {
+    stopped = true
+    clearTimeout(retryTimer)
+    socket.close()
+  }
+}
 
 // Warns in the browser console if data doesn't match the format agreed with
 // the firmware team. Warns instead of crashing, so one bad field doesn't take

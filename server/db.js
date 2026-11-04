@@ -62,22 +62,26 @@ const WATERING_COLUMNS = `recorded_at AS "timestamp", duration_s, water_ml`
 
 // $1, $2 ... are placeholders. pg fills them in safely, so values sent by
 // the ESP32 can never be run as SQL ("SQL injection").
+//
+// The inserts return the saved row in the same format as the GET queries,
+// plus its id, so it can be pushed to the website as-is.
 export async function insertReading(r) {
   const result = await pool.query(
     `INSERT INTO readings (recorded_at, soil_moisture, lux, co2_ppm, temp_c, humidity_pct, water_ml)
      VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING id`,
+     RETURNING id, ${READING_COLUMNS}`,
     [r.timestamp, r.soil_moisture, r.lux, r.co2_ppm, r.temp_c, r.humidity_pct, r.water_ml],
   )
-  return result.rows[0].id
+  return result.rows[0]
 }
 
 export async function insertWatering(w) {
   const result = await pool.query(
-    `INSERT INTO waterings (recorded_at, duration_s, water_ml) VALUES ($1, $2, $3) RETURNING id`,
+    `INSERT INTO waterings (recorded_at, duration_s, water_ml) VALUES ($1, $2, $3)
+     RETURNING id, ${WATERING_COLUMNS}`,
     [w.timestamp, w.duration_s, w.water_ml],
   )
-  return result.rows[0].id
+  return result.rows[0]
 }
 
 // The newest reading, or null if there are none yet.
