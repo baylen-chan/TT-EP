@@ -4,3 +4,6 @@
 !.env.example
 node_modules
 .DS_Store
+
+# Claude Code's local settings for this computer
+.claude/
