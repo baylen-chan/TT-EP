@@ -1,4 +1,4 @@
-import { formatLocalTime } from '../data/convert.js'
+import { formatLocalTime, isNumber } from '../data/convert.js'
 
 // Lists the most recent times the pump ran, newest first.
 export default function WateringTable({ waterings }) {
@@ -27,8 +27,9 @@ export default function WateringTable({ waterings }) {
           {recent.map((watering) => (
             <tr key={watering.timestamp}>
               <td>{formatLocalTime(watering.timestamp)}</td>
-              <td>{watering.water_ml} mL</td>
-              <td>{watering.duration_s} s</td>
+              {/* Either can be null if the firmware doesn't send it */}
+              <td>{isNumber(watering.water_ml) ? `${watering.water_ml} mL` : 'No data'}</td>
+              <td>{isNumber(watering.duration_s) ? `${watering.duration_s} s` : 'No data'}</td>
             </tr>
           ))}
         </tbody>

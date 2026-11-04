@@ -85,11 +85,17 @@ function App() {
         </div>
       </header>
 
+      {/* Shown as soon as the first load finishes, even with no readings yet:
+          the table says "No data" and the charts are empty. */}
       <main className="page">
-        {latest && (
+        {data && (
           <>
             <h2>Alerts</h2>
-            <AlertList alerts={alerts} />
+            {latest ? (
+              <AlertList alerts={alerts} />
+            ) : (
+              <p className="muted">No alerts yet. They'll appear once the first reading arrives.</p>
+            )}
 
             <h2>Latest readings</h2>
             <LatestTable reading={latest} alerts={alerts} />

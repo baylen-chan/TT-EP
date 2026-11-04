@@ -72,7 +72,7 @@ export function evaluateAlerts(reading, now = Date.now()) {
     }
 
     const limits = CONFIG.THRESHOLDS[metric.key]
-    if (!limits) continue // e.g. light: dark at night is normal
+    if (!limits) continue // a metric with no limits set in config.js
 
     const result = checkLimits(value, limits)
     if (!result) continue
